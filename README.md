@@ -77,6 +77,16 @@ docker compose -f docker-compose.prod.yml up --build -d
 ```
 Uses optimized multi-stage builds, non-root users, nginx for static serving, and health checks.
 
+## Screenshots
+
+| Home | Rooms | Login |
+|------|-------|-------|
+| ![Home](docs/screenshots/dashboard-home.png) | ![Rooms](docs/screenshots/dashboard-rooms.png) | ![Login](docs/screenshots/dashboard-login.png) |
+
+| Scenes | Settings |
+|--------|----------|
+| ![Scenes](docs/screenshots/dashboard-scenes.png) | ![Settings](docs/screenshots/dashboard-settings.png) |
+
 ## Architecture
 ```
 Browser/Tablet → Web UI (:3000) → API Gateway (:8000) → Home Assistant (:8123) → Devices
