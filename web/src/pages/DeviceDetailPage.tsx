@@ -4,19 +4,12 @@ import { fetchDevice, sendDeviceCommand, type Device } from "../api/client";
 import { t } from "../i18n";
 import AppShell from "../components/AppShell";
 import TopAppBar from "../components/TopAppBar";
-import Icon, { type IconName } from "../components/Icon";
+import Icon from "../components/Icon";
 import Toggle from "../components/Toggle";
-import Slider from "../components/Slider";
-import Card from "../components/Card";
-
-function deviceIcon(type: Device["type"]): IconName {
-  switch (type) {
-    case "light": return "Lightbulb";
-    case "thermostat": return "Thermometer";
-    case "sensor": return "Motion";
-    default: return "Power";
-  }
-}
+import ThermostatDial from "../components/ThermostatDial";
+import LightControlSheet from "../components/LightControlSheet";
+import SensorCard from "../components/SensorCard";
+import GaugeCard from "../components/GaugeCard";
 
 const DeviceDetailPage: FC = () => {
   const { deviceId } = useParams<{ deviceId: string }>();
@@ -58,7 +51,7 @@ const DeviceDetailPage: FC = () => {
     return (
       <AppShell>
         <div className="flex items-center justify-center py-24">
-          <p className="text-md-on-surface-variant">{t("common.loading")}</p>
+          <p className="text-gray-500 dark:text-gray-400">{t("common.loading")}</p>
         </div>
       </AppShell>
     );
@@ -72,99 +65,145 @@ const DeviceDetailPage: FC = () => {
         <TopAppBar
           title={device.name}
           navigationIcon={
-            <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-md-on-surface/[0.08] min-w-[44px] min-h-[44px] flex items-center justify-center">
-              <Icon name="ArrowLeft" size={24} className="text-md-on-surface" />
+            <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 min-w-[44px] min-h-[44px] flex items-center justify-center">
+              <Icon name="ArrowLeft" size={24} className="text-gray-900 dark:text-gray-50" />
             </button>
           }
         />
       }
     >
-      <div className="max-w-lg mx-auto space-y-6 pt-4">
-        {/* Hero */}
-        <div className="flex flex-col items-center gap-4">
-          <div className={`w-24 h-24 rounded-full flex items-center justify-center transition-colors duration-300 ${
-            isOn ? "bg-md-primary-container" : "bg-md-surface-variant"
-          }`}>
-            <Icon name={deviceIcon(device.type)} size={48} className={isOn ? "text-md-on-primary-container" : "text-md-on-surface-variant"} />
-          </div>
-          <div className="text-center">
-            <h2 className="text-xl font-medium text-md-on-surface">{device.name}</h2>
-            {device.room_name && (
-              <p className="text-sm text-md-on-surface-variant">{device.room_name}</p>
-            )}
-          </div>
-        </div>
+      <div className="max-w-lg mx-auto pt-4 pb-8 px-4">
+        {/* === THERMOSTAT === */}
+        {device.type === "thermostat" && (
+          <div className="space-y-6">
+            <ThermostatDial
+              currentTemp={device.temperature ?? 22}
+              targetTemp={device.target_temperature ?? 22}
+              mode={isOn ? "heat" : "off"}
+              onTargetChange={handleTargetTemp}
+              onModeChange={(mode) => {
+                if (mode === "off") handleToggle(false);
+                else if (!isOn) handleToggle(true);
+              }}
+            />
 
-        {/* Power toggle */}
-        {device.type !== "sensor" && (
-          <Card variant="filled">
-            <div className="flex items-center justify-between">
-              <span className="text-md-on-surface font-medium">{t("device.switch")}</span>
-              <div className="flex items-center gap-3">
-                <span className={`text-sm ${isOn ? "text-md-primary" : "text-md-on-surface-variant"}`}>
-                  {isOn ? t("device.on") : t("device.off")}
+            {/* Gauge */}
+            <div className="rounded-2xl bg-gray-50 dark:bg-gray-800/50 p-4">
+              <GaugeCard
+                value={device.temperature ?? 22}
+                min={10}
+                max={40}
+                unit="°C"
+                name="Current Temperature"
+              />
+            </div>
+
+            {/* Info */}
+            <div className="rounded-2xl bg-gray-50 dark:bg-gray-800/50 p-4 space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Room</span>
+                <span className="text-gray-900 dark:text-gray-50 font-medium">{device.room_name ?? "—"}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Status</span>
+                <span className={`font-medium ${isOn ? "text-orange-500" : "text-gray-400"}`}>
+                  {isOn ? "Heating" : "Off"}
                 </span>
-                <Toggle checked={isOn} onChange={handleToggle} />
               </div>
             </div>
-          </Card>
+          </div>
         )}
 
-        {/* Brightness slider (lights) */}
+        {/* === LIGHT === */}
         {device.type === "light" && (
-          <Card variant="filled">
-            <Slider
-              value={device.brightness ?? 0}
-              onChange={handleBrightness}
-              min={0}
-              max={100}
-              step={1}
-              label={t("device.brightness")}
-              disabled={!isOn}
+          <div className="flex flex-col items-center gap-6">
+            <LightControlSheet
+              name={device.name}
+              brightness={device.brightness ?? 0}
+              isOn={isOn}
+              onBrightnessChange={handleBrightness}
+              onToggle={() => handleToggle(!isOn)}
             />
-          </Card>
-        )}
 
-        {/* Thermostat controls */}
-        {device.type === "thermostat" && (
-          <Card variant="filled">
-            <div className="space-y-4">
-              {device.temperature != null && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-md-on-surface-variant">{t("device.currentTemp")}</span>
-                  <span className="text-3xl font-light text-md-on-surface tabular-nums">{device.temperature}°C</span>
-                </div>
-              )}
-              {device.target_temperature != null && (
-                <Slider
-                  value={device.target_temperature}
-                  onChange={handleTargetTemp}
-                  min={15}
-                  max={35}
-                  step={1}
-                  label={t("device.targetTemp")}
-                  unit="°C"
-                  disabled={!isOn}
-                />
-              )}
+            {/* Info */}
+            <div className="w-full rounded-2xl bg-gray-50 dark:bg-gray-800/50 p-4 space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Room</span>
+                <span className="text-gray-900 dark:text-gray-50 font-medium">{device.room_name ?? "—"}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Brightness</span>
+                <span className="text-gray-900 dark:text-gray-50 font-medium tabular-nums">
+                  {isOn ? `${device.brightness ?? 0}%` : "Off"}
+                </span>
+              </div>
             </div>
-          </Card>
+          </div>
         )}
 
-        {/* Sensor info */}
+        {/* === SENSOR === */}
         {device.type === "sensor" && (
-          <Card variant="filled">
-            <div className="flex flex-col items-center gap-3 py-4">
-              <Icon
-                name="Motion"
-                size={40}
-                className={isOn ? "text-md-primary" : "text-md-on-surface-variant"}
+          <div className="space-y-6">
+            <div className="rounded-2xl bg-gray-50 dark:bg-gray-800/50 p-5">
+              <SensorCard
+                name={device.name}
+                value={isOn ? "Detected" : "Clear"}
+                icon={
+                  <Icon
+                    name="Motion"
+                    size={20}
+                    className={isOn ? "text-emerald-500" : "text-gray-400"}
+                  />
+                }
+                isActive={isOn}
               />
-              <p className={`text-lg font-medium ${isOn ? "text-md-primary" : "text-md-on-surface-variant"}`}>
-                {isOn ? t("device.motionDetected") : t("device.noMotion")}
+            </div>
+
+            {/* Info */}
+            <div className="rounded-2xl bg-gray-50 dark:bg-gray-800/50 p-4 space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Room</span>
+                <span className="text-gray-900 dark:text-gray-50 font-medium">{device.room_name ?? "—"}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Status</span>
+                <span className={`font-medium ${isOn ? "text-emerald-500" : "text-gray-400"}`}>
+                  {isOn ? "Motion detected" : "No motion"}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* === SWITCH (generic) === */}
+        {device.type === "switch" && (
+          <div className="space-y-6">
+            <div className="flex flex-col items-center gap-6 py-8">
+              <div className={`w-28 h-28 rounded-full flex items-center justify-center transition-all duration-300 ${
+                isOn
+                  ? "bg-amber-100 dark:bg-amber-900/30 shadow-lg shadow-amber-500/10"
+                  : "bg-gray-100 dark:bg-gray-800"
+              }`}>
+                <Icon
+                  name="Power"
+                  size={48}
+                  className={`transition-colors ${isOn ? "text-amber-600 dark:text-amber-400" : "text-gray-400 dark:text-gray-600"}`}
+                />
+              </div>
+              <Toggle checked={isOn} onChange={handleToggle} />
+              <p className={`text-sm font-medium ${isOn ? "text-amber-600 dark:text-amber-400" : "text-gray-400"}`}>
+                {isOn ? "On" : "Off"}
               </p>
             </div>
-          </Card>
+
+            {/* Info */}
+            <div className="rounded-2xl bg-gray-50 dark:bg-gray-800/50 p-4 space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Room</span>
+                <span className="text-gray-900 dark:text-gray-50 font-medium">{device.room_name ?? "—"}</span>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </AppShell>

@@ -22,6 +22,10 @@ const RoomDetailPage: FC = () => {
     sendCommand(id, { action: "set_brightness", value });
   }
 
+  function handleTargetTemp(id: string, value: number) {
+    sendCommand(id, { action: "set_temperature", value });
+  }
+
   return (
     <AppShell
       topBar={
@@ -54,6 +58,7 @@ const RoomDetailPage: FC = () => {
                 device={device}
                 onToggle={toggle}
                 onBrightness={handleBrightness}
+                onTargetTemp={handleTargetTemp}
                 onClick={(id) => navigate(`/devices/${id}`)}
               />
             ))}
