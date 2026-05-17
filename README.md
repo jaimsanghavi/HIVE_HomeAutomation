@@ -2,6 +2,8 @@
 
 > Local-first, white-labeled smart home platform powered by Home Assistant Core.
 
+![Hive Dashboard](docs/screenshots/dashboard-hero.png)
+
 ## Quick Start
 
 ### Prerequisites
