@@ -1,0 +1,26 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# MQTT broker connection
+mqtt:
+
+# HTTP settings
+http:
+  cors_allowed_origins:
+    - http://localhost:3000
+    - http://localhost:8000
+
+# Disable onboarding after initial setup
+# onboarding:
+
+# Logging
+logger:
+  default: info
+  logs:
+    homeassistant.components.mqtt: debug
+
+# Automation (empty for now)
+automation: []
+
+# Scene support
+scene: []

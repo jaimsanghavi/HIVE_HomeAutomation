@@ -1,0 +1,74 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2024.12
+    container_name: hive-ha
+    restart: unless-stopped
+    ports:
+      - "${HA_PORT:-8123}:8123"
+    volumes:
+      - ./homeassistant/config:/config
+    environment:
+      - TZ=Asia/Kolkata
+    depends_on:
+      - mqtt
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: hive-mqtt
+    restart: unless-stopped
+    volumes:
+      - ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mqtt-data:/mosquitto/data
+      - mqtt-log:/mosquitto/log
+    ports:
+      - "${MQTT_PORT:-1883}:1883"
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: hive-gateway
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_PORT:-8000}:8000"
+    environment:
+      - HA_URL=${HA_URL:-http://host.docker.internal:8123}
+      - HA_TOKEN=${HA_TOKEN}
+      - MQTT_HOST=mqtt
+      - MQTT_PORT=1883
+      - GATEWAY_SECRET=${GATEWAY_SECRET:-change-me-in-production}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - homeassistant
+      - mqtt
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: hive-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
+      - VITE_WS_URL=${VITE_WS_URL:-ws://localhost:8000/ws}
+    depends_on:
+      - gateway
+
+  simulator:
+    build:
+      context: ./simulators/virtual-devices
+      dockerfile: Dockerfile
+    container_name: hive-simulator
+    restart: unless-stopped
+    environment:
+      - MQTT_HOST=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+
+volumes:
+  mqtt-data:
+  mqtt-log:

@@ -1,0 +1,10 @@
+{
+  "name": "Hive Smart Home",
+  "short_name": "Hive",
+  "description": "Smart Home Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": []
+}

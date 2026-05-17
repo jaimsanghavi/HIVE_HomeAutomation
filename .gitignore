@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment
+.env
+
+# Home Assistant runtime data
+homeassistant/config/.storage/
+homeassistant/config/home-assistant_v2.db
+homeassistant/config/home-assistant_v2.db-wal
+homeassistant/config/home-assistant_v2.db-shm
+homeassistant/config/tts/
+homeassistant/config/.cloud/
+homeassistant/config/deps/
+
+# MQTT persistence
+mqtt/data/
+mqtt/log/
+
+# Docker
+.docker/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+web/dist/
+gateway/*.egg-info/
+
+# ESPHome secrets
+firmware/esphome/secrets.yaml
+
+# Logs
+*.log

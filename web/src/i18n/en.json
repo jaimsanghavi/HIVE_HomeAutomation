@@ -1,0 +1,73 @@
+{
+  "app": {
+    "name": "Hive",
+    "tagline": "Your home, simplified."
+  },
+  "nav": {
+    "home": "Home",
+    "rooms": "Rooms",
+    "scenes": "Scenes",
+    "settings": "Settings"
+  },
+  "login": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to your smart home",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign In",
+    "error": "Invalid username or password"
+  },
+  "dashboard": {
+    "greeting": "Good {{timeOfDay}}",
+    "allDevices": "All Devices",
+    "rooms": "Rooms",
+    "quickActions": "Quick Actions",
+    "activeDevices": "{{count}} active",
+    "noDevices": "No devices found"
+  },
+  "room": {
+    "devices": "Devices",
+    "noDevices": "No devices in this room",
+    "allRooms": "All Rooms"
+  },
+  "device": {
+    "on": "On",
+    "off": "Off",
+    "brightness": "Brightness",
+    "temperature": "Temperature",
+    "targetTemp": "Target",
+    "currentTemp": "Current",
+    "motionDetected": "Motion Detected",
+    "noMotion": "No Motion",
+    "switch": "Switch",
+    "light": "Light",
+    "sensor": "Sensor",
+    "thermostat": "Thermostat"
+  },
+  "scenes": {
+    "title": "Scenes",
+    "activate": "Activate",
+    "noScenes": "No scenes configured",
+    "activated": "Scene activated"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "darkMode": "Dark Mode",
+    "language": "Language",
+    "about": "About",
+    "version": "Version",
+    "logout": "Sign Out",
+    "logoutConfirm": "Are you sure you want to sign out?"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
+  }
+}
